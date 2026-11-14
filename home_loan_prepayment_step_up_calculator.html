@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrepaySmart — Home Loan EMI, Step-Up & SIP Wealth Calculator</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 18px;
+      width: 18px;
+      border-radius: 9999px;
+      background: #4f46e5;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.45);
+      margin-top: -6px;
+      transition: transform 0.15s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 6px;
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .dark input[type=range]::-webkit-slider-runnable-track {
+      background: #334155;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- Top Header -->
+  <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white shadow-md">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white leading-none">PrepaySmart</h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Home Loan Prepayment, Step-Up EMI & SIP Wealth Simulator</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button type="button" id="presetAggressiveBtn" class="hidden sm:inline-flex items-center text-xs font-semibold px-3 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 dark:bg-brand-900/40 dark:hover:bg-brand-900/60 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-800 transition">
+          10% Step-Up + 1 Extra EMI
+        </button>
+        <button type="button" id="themeToggleBtn" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition" aria-label="Toggle dark mode">
+          <svg id="sunIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+          <svg id="moonIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Hero Summary Banner -->
+    <section class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 text-white p-6 shadow-lg">
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="space-y-1.5">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-sm">
+            Smart Debt Elimination & Parallel Wealth Plan
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-black tracking-tight">
+            Save <span id="heroInterestSaved" class="text-amber-300">₹0</span> in Total Interest!
+          </h2>
+          <p class="text-white/90 text-sm max-w-2xl">
+            With <strong id="heroExtraSummary">1 extra EMI/yr</strong> and <strong id="heroStepSummary">5% annual EMI step-up</strong>, your loan closes in
+            <strong id="heroRevisedTenure" class="underline decoration-amber-300 decoration-2">0 Yrs</strong> instead of
+            <strong id="heroOriginalTenure">20 Yrs</strong>.
+          </p>
+        </div>
+        <div class="flex items-center gap-4 bg-white/15 backdrop-blur-md px-5 py-4 rounded-xl border border-white/20 shrink-0">
+          <div>
+            <div class="text-[11px] uppercase tracking-wider text-emerald-100 font-bold">Tenure Reduced By</div>
+            <div id="heroTimeSaved" class="text-2xl font-black text-white">0 Yrs</div>
+            <div id="heroPctFaster" class="text-xs text-emerald-200 font-semibold">0% faster payoff</div>
+          </div>
+          <div class="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Grid: Inputs (Left 5 Cols) & Analytics (Right 7 Cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+      <!-- Left Column: Interactive Form Controls -->
+      <aside class="lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 space-y-6">
+        <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
+          <h2 class="text-base font-bold text-slate-900 dark:text-white">1. Core Home Loan Details</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Type any value or drag sliders to recalculate immediately.</p>
+        </div>
+
+        <!-- Principal Loan Amount -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center text-sm">
+            <label for="loanAmountInput" class="font-semibold text-slate-700 dark:text-slate-300">Loan Amount (Principal)</label>
+            <span id="loanAmountWords" class="text-xs font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 px-2.5 py-0.5 rounded-md">₹50 Lakhs</span>
+          </div>
+          <div class="relative rounded-xl border border-slate-300 dark:border-slate-700 focus-within:ring-2 focus-within:ring-brand-500 bg-white dark:bg-slate-950">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 font-bold text-sm">₹</span>
+            <input type="number" id="loanAmountInput" min="100000" max="100000000" step="50000" value="5000000"
+              class="w-full pl-8 pr-4 py-2.5 text-base font-bold bg-transparent text-slate-900 dark:text-white outline-none">
+          </div>
+          <input type="range" id="loanAmountSlider" min="500000" max="30000000" step="100000" value="5000000" class="w-full">
+          <div class="flex justify-between text-[11px] text-slate-400">
+            <span>₹5L</span>
+            <span>₹1Cr</span>
+            <span>₹2Cr</span>
+            <span>₹3Cr</span>
+          </div>
+        </div>
+
+        <!-- Interest Rate -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center text-sm">
+            <label for="interestRateInput" class="font-semibold text-slate-700 dark:text-slate-300">Interest Rate (% p.a.)</label>
+            <span class="text-xs text-slate-500">Floating / Fixed</span>
+          </div>
+          <div class="relative rounded-xl border border-slate-300 dark:border-slate-700 focus-within:ring-2 focus-within:ring-brand-500 bg-white dark:bg-slate-950">
+            <input type="number" id="interestRateInput" min="1" max="25" step="0.05" value="8.50"
+              class="w-full pl-4 pr-9 py-2.5 text-base font-bold bg-transparent text-slate-900 dark:text-white outline-none">
+            <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 font-bold text-sm">%</span>
+          </div>
+          <input type="range" id="interestRateSlider" min="5" max="16" step="0.1" value="8.5" class="w-full">
+          <div class="flex justify-between text-[11px] text-slate-400">
+            <span>5%</span>
+            <span>8.5%</span>
+            <span>12%</span>
+            <span>16%</span>
+          </div>
+        </div>
+
+        <!-- Loan Tenure -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center text-sm">
+            <label for="tenureInput" class="font-semibold text-slate-700 dark:text-slate-300">Loan Tenure (Years)</label>
+            <span id="tenureMonthsLabel" class="text-xs font-semibold text-slate-600 dark:text-slate-400">240 Months</span>
+          </div>
+          <div class="relative rounded-xl border border-slate-300 dark:border-slate-700 focus-within:ring-2 focus-within:ring-brand-500 bg-white dark:bg-slate-950">
+            <input type="number" id="tenureInput" min="1" max="40" step="1" value="20"
+              class="w-full pl-4 pr-16 py-2.5 text-base font-bold bg-transparent text-slate-900 dark:text-white outline-none">
+            <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 font-medium text-sm">Years</span>
+          </div>
+          <input type="range" id="tenureSlider" min="1" max="35" step="1" value="20" class="w-full">
+          <div class="flex justify-between text-[11px] text-slate-400">
+            <span>1 Yr</span>
+            <span>10 Yrs</span>
+            <span>20 Yrs</span>
+            <span>35 Yrs</span>
+          </div>
+        </div>
+
+        <!-- Section 2: Flexible Prepayment & Step-Up Strategy -->
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-extrabold uppercase tracking-wider text-brand-600 dark:text-brand-400">2. Flexible Prepayment & Step-Up</h3>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300">Custom Windows</span>
+          </div>
+
+          <!-- Extra EMIs per Year -->
+          <div class="space-y-2.5 pt-2 border-t border-slate-200 dark:border-slate-700">
+            <div class="flex justify-between items-center text-sm">
+              <label for="extraEmiCountSlider" class="font-semibold text-slate-800 dark:text-slate-200">Extra EMIs Paid / Year</label>
+              <div class="flex items-center gap-2">
+                <span id="extraEmiCountBadge" class="text-xs font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/40 px-2 py-0.5 rounded">1 Extra / yr</span>
+                <span id="extraEmiAmtBadge" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400">₹0/yr</span>
+              </div>
+            </div>
+            <input type="range" id="extraEmiCountSlider" min="0" max="4" step="1" value="1" class="w-full">
+
+            <div id="extraEmiWindowBox" class="grid grid-cols-2 gap-3 pt-1">
+              <div>
+                <label for="extraEmiStartYear" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Start From (Loan Yr)</label>
+                <input type="number" id="extraEmiStartYear" min="1" max="35" value="1"
+                  class="w-full px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500">
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label for="extraEmiDuration" class="text-xs font-semibold text-slate-600 dark:text-slate-300">For Years</label>
+                  <label class="inline-flex items-center text-[10px] font-bold text-brand-600 dark:text-brand-400 cursor-pointer">
+                    <input type="checkbox" id="extraEmiUntilPayoff" checked class="w-3 h-3 mr-1 rounded text-brand-600">
+                    Till Payoff
+                  </label>
+                </div>
+                <input type="number" id="extraEmiDuration" min="1" max="35" value="15" disabled
+                  class="w-full px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none disabled:opacity-40">
+              </div>
+            </div>
+          </div>
+
+          <!-- Annual EMI Step-Up -->
+          <div class="space-y-2.5 pt-3 border-t border-slate-200 dark:border-slate-700">
+            <div class="flex justify-between items-center text-sm">
+              <label for="stepUpSlider" class="font-semibold text-slate-800 dark:text-slate-200">Annual EMI Step-Up (%)</label>
+              <span id="stepUpRateBadge" class="text-xs font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/40 px-2 py-0.5 rounded">5% / Year</span>
+            </div>
+            <input type="range" id="stepUpSlider" min="0" max="25" step="1" value="5" class="w-full">
+
+            <div id="stepUpWindowBox" class="grid grid-cols-2 gap-3 pt-1">
+              <div>
+                <label for="stepUpStartYear" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Start Step-Up (Loan Yr)</label>
+                <input type="number" id="stepUpStartYear" min="1" max="35" value="2"
+                  class="w-full px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500">
+              </div>
+              <div>
+                <label for="stepUpDuration" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Step-Up Duration (Yrs)</label>
+                <input type="number" id="stepUpDuration" min="1" max="35" value="10"
+                  class="w-full px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Parallel SIP Wealth Corpus -->
+        <div class="p-4 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/60 space-y-3.5">
+          <div class="flex items-center justify-between">
+            <label class="inline-flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="sipEnabledCheckbox" checked class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500">
+              <span class="text-sm font-bold text-slate-900 dark:text-white">3. Parallel SIP Wealth Corpus</span>
+            </label>
+            <span id="sipMonthlyPreview" class="text-xs font-extrabold text-indigo-600 dark:text-indigo-400">₹0/mo</span>
+          </div>
+
+          <div id="sipControlsBox" class="space-y-3 pt-2 border-t border-indigo-200/70 dark:border-indigo-800/50">
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs">
+                <label for="sipPctSlider" class="font-semibold text-slate-700 dark:text-slate-300">SIP as % of Initial EMI</label>
+                <span id="sipPctBadge" class="font-bold text-brand-600 dark:text-brand-400">10% of EMI</span>
+              </div>
+              <input type="range" id="sipPctSlider" min="1" max="50" step="1" value="10" class="w-full">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="sipStartYear" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Start SIP (Loan Yr)</label>
+                <input type="number" id="sipStartYear" min="1" max="35" value="1"
+                  class="w-full px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none">
+              </div>
+              <div>
+                <label for="sipDurationYears" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">SIP Duration (Yrs)</label>
+                <input type="number" id="sipDurationYears" min="1" max="35" value="15"
+                  class="w-full px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none">
+              </div>
+              <div>
+                <label for="sipReturnRate" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Expected Return (% p.a.)</label>
+                <input type="number" id="sipReturnRate" min="1" max="30" step="0.5" value="12"
+                  class="w-full px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none">
+              </div>
+              <div>
+                <label for="sipStepUpRate" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">SIP Step-Up (% / yr)</label>
+                <input type="number" id="sipStepUpRate" min="0" max="25" step="1" value="5"
+                  class="w-full px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" id="resetBtn" class="w-full py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-dashed border-slate-300 dark:border-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          Reset All Defaults
+        </button>
+      </aside>
+
+      <!-- Right Column: KPI Summary & Charts -->
+      <section class="lg:col-span-7 space-y-6">
+
+        <!-- KPI Metrics Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
+          <!-- Initial & Peak EMI -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Initial Monthly EMI</div>
+            <div id="kpiBaseEmi" class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1">₹0</div>
+            <div id="kpiPeakEmi" class="text-[11px] font-semibold text-brand-600 dark:text-brand-400 mt-1">Peak EMI: ₹0/mo</div>
+          </div>
+
+          <!-- New Payoff Time -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-brand-200 dark:border-brand-900/50 shadow-sm">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400">Revised Tenure</div>
+            <div id="kpiRevisedTenure" class="text-xl sm:text-2xl font-black text-brand-600 dark:text-brand-400 mt-1">0 Yrs</div>
+            <div id="kpiTenureSaved" class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-1">0 Yrs saved</div>
+          </div>
+
+          <!-- Total Interest Saved -->
+          <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 shadow-sm col-span-2 sm:col-span-1">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">Interest Saved</div>
+            <div id="kpiInterestSaved" class="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300 mt-1">₹0</div>
+            <div id="kpiInterestSavedPct" class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-1">0% saved</div>
+          </div>
+
+          <!-- Actual Interest Paid -->
+          <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/70 shadow-sm">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300">Actual Interest Paid</div>
+            <div id="kpiActualInterest" class="text-xl sm:text-2xl font-black text-amber-700 dark:text-amber-400 mt-1">₹0</div>
+            <div id="kpiBaselineInterest" class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1">Baseline: ₹0</div>
+          </div>
+
+          <!-- Total Outflow -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Loan Outflow</div>
+            <div id="kpiTotalOutflow" class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1">₹0</div>
+            <div id="kpiBaselineOutflow" class="text-[11px] font-medium text-slate-400 mt-1">Baseline: ₹0</div>
+          </div>
+
+          <!-- SIP Corpus Built -->
+          <div class="p-4 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">SIP Corpus Built</span>
+              <span id="kpiSipGainBadge" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300">+0%</span>
+            </div>
+            <div id="kpiSipCorpus" class="text-xl sm:text-2xl font-black text-indigo-900 dark:text-indigo-200 mt-1">₹0</div>
+            <div id="kpiSipInvested" class="text-[11px] font-medium text-indigo-600 dark:text-indigo-400 mt-1">Invested: ₹0</div>
+          </div>
+        </div>
+
+        <!-- Visual Charts Container -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">Loan Amortization vs. SIP Wealth Trajectory</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Track principal payoff acceleration against compounding SIP wealth.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 text-xs font-semibold">
+              <span class="inline-flex items-center gap-1.5 text-slate-500"><span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>Baseline</span>
+              <span class="inline-flex items-center gap-1.5 text-brand-600 dark:text-brand-400"><span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>Prepay Loan</span>
+              <span class="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>SIP Corpus</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+            <div class="md:col-span-2 h-64 sm:h-72 w-full">
+              <canvas id="trajectoryChart"></canvas>
+            </div>
+            <div class="flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+              <div class="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">Total Cost & Savings Split</div>
+              <div class="w-36 h-36 relative">
+                <canvas id="donutChart"></canvas>
+              </div>
+              <div class="mt-3 w-full space-y-1.5 text-xs">
+                <div class="flex justify-between">
+                  <span class="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-300"><span class="w-2.5 h-2.5 rounded-sm bg-indigo-600"></span>Principal</span>
+                  <span id="donutPrincipalText" class="font-bold">₹0</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-300"><span class="w-2.5 h-2.5 rounded-sm bg-amber-500"></span>Interest Paid</span>
+                  <span id="donutInterestText" class="font-bold">₹0</span>
+                </div>
+                <div class="flex justify-between text-emerald-600 dark:text-emerald-400">
+                  <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span>Interest Saved</span>
+                  <span id="donutSavedText" class="font-bold">₹0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </div>
+
+    <!-- Year-by-Year Schedule Table -->
+    <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+      <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">Year-by-Year Amortization & SIP Wealth Schedule</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Complete annual ledger through full loan tenure and SIP growth horizon.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" id="copySummaryBtn" class="inline-flex items-center text-xs font-semibold px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition">
+            Copy Summary
+          </button>
+          <button type="button" id="exportCsvBtn" class="inline-flex items-center text-xs font-semibold px-3.5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white shadow-sm transition">
+            Export CSV
+          </button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto max-h-[460px] overflow-y-auto">
+        <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+          <thead class="sticky top-0 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700 z-10">
+            <tr>
+              <th class="py-3 px-3">Year</th>
+              <th class="py-3 px-3">Opening Balance</th>
+              <th class="py-3 px-3">Monthly EMI</th>
+              <th class="py-3 px-3">Regular EMI Paid</th>
+              <th class="py-3 px-3">Extra Prepayment</th>
+              <th class="py-3 px-3">Principal Paid</th>
+              <th class="py-3 px-3">Interest Paid</th>
+              <th class="py-3 px-3 text-amber-700 dark:text-amber-400">Cumulative Interest</th>
+              <th class="py-3 px-3">Closing Balance</th>
+              <th class="py-3 px-3 text-indigo-700 dark:text-indigo-400">Monthly SIP</th>
+              <th class="py-3 px-3 text-indigo-700 dark:text-indigo-400">Cumulative SIP Inv.</th>
+              <th class="py-3 px-3 text-right text-emerald-700 dark:text-emerald-400">Year-End SIP Corpus</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 font-medium text-slate-700 dark:text-slate-300">
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-3 rounded-xl shadow-2xl text-xs font-semibold">
+    <span id="toastText">Done</span>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // --- DOM Cache ---
+      const el = {
+        loanAmountInput: document.getElementById('loanAmountInput'),
+        loanAmountSlider: document.getElementById('loanAmountSlider'),
+        loanAmountWords: document.getElementById('loanAmountWords'),
+
+        interestRateInput: document.getElementById('interestRateInput'),
+        interestRateSlider: document.getElementById('interestRateSlider'),
+
+        tenureInput: document.getElementById('tenureInput'),
+        tenureSlider: document.getElementById('tenureSlider'),
+        tenureMonthsLabel: document.getElementById('tenureMonthsLabel'),
+
+        extraEmiCountSlider: document.getElementById('extraEmiCountSlider'),
+        extraEmiCountBadge: document.getElementById('extraEmiCountBadge'),
+        extraEmiAmtBadge: document.getElementById('extraEmiAmtBadge'),
+        extraEmiStartYear: document.getElementById('extraEmiStartYear'),
+        extraEmiDuration: document.getElementById('extraEmiDuration'),
+        extraEmiUntilPayoff: document.getElementById('extraEmiUntilPayoff'),
+        extraEmiWindowBox: document.getElementById('extraEmiWindowBox'),
+
+        stepUpSlider: document.getElementById('stepUpSlider'),
+        stepUpRateBadge: document.getElementById('stepUpRateBadge'),
+        stepUpStartYear: document.getElementById('stepUpStartYear'),
+        stepUpDuration: document.getElementById('stepUpDuration'),
+        stepUpWindowBox: document.getElementById('stepUpWindowBox'),
+
+        sipEnabledCheckbox: document.getElementById('sipEnabledCheckbox'),
+        sipControlsBox: document.getElementById('sipControlsBox'),
+        sipMonthlyPreview: document.getElementById('sipMonthlyPreview'),
+        sipPctSlider: document.getElementById('sipPctSlider'),
+        sipPctBadge: document.getElementById('sipPctBadge'),
+        sipStartYear: document.getElementById('sipStartYear'),
+        sipDurationYears: document.getElementById('sipDurationYears'),
+        sipReturnRate: document.getElementById('sipReturnRate'),
+        sipStepUpRate: document.getElementById('sipStepUpRate'),
+
+        // Hero
+        heroInterestSaved: document.getElementById('heroInterestSaved'),
+        heroExtraSummary: document.getElementById('heroExtraSummary'),
+        heroStepSummary: document.getElementById('heroStepSummary'),
+        heroRevisedTenure: document.getElementById('heroRevisedTenure'),
+        heroOriginalTenure: document.getElementById('heroOriginalTenure'),
+        heroTimeSaved: document.getElementById('heroTimeSaved'),
+        heroPctFaster: document.getElementById('heroPctFaster'),
+
+        // KPIs
+        kpiBaseEmi: document.getElementById('kpiBaseEmi'),
+        kpiPeakEmi: document.getElementById('kpiPeakEmi'),
+        kpiRevisedTenure: document.getElementById('kpiRevisedTenure'),
+        kpiTenureSaved: document.getElementById('kpiTenureSaved'),
+        kpiInterestSaved: document.getElementById('kpiInterestSaved'),
+        kpiInterestSavedPct: document.getElementById('kpiInterestSavedPct'),
+        kpiActualInterest: document.getElementById('kpiActualInterest'),
+        kpiBaselineInterest: document.getElementById('kpiBaselineInterest'),
+        kpiTotalOutflow: document.getElementById('kpiTotalOutflow'),
+        kpiBaselineOutflow: document.getElementById('kpiBaselineOutflow'),
+        kpiSipCorpus: document.getElementById('kpiSipCorpus'),
+        kpiSipInvested: document.getElementById('kpiSipInvested'),
+        kpiSipGainBadge: document.getElementById('kpiSipGainBadge'),
+
+        // Donut Labels
+        donutPrincipalText: document.getElementById('donutPrincipalText'),
+        donutInterestText: document.getElementById('donutInterestText'),
+        donutSavedText: document.getElementById('donutSavedText'),
+
+        // Table
+        scheduleTableBody: document.getElementById('scheduleTableBody')
+      };
+
+      let trajectoryChart = null;
+      let donutChart = null;
+      let latestResults = null;
+
+      // --- Formatting Helpers ---
+      function formatINR(value) {
+        if (!Number.isFinite(value)) return '₹0';
+        return '₹' + Math.round(value).toLocaleString('en-IN');
+      }
+
+      function formatWordsINR(value) {
+        if (!value || value <= 0) return '₹0';
+        if (value >= 10000000) return '₹' + (value / 10000000).toFixed(2).replace(/\.00$/, '') + ' Cr';
+        if (value >= 100000) return '₹' + (value / 100000).toFixed(2).replace(/\.00$/, '') + ' Lakhs';
+        return formatINR(value);
+      }
+
+      function formatMonths(months) {
+        const total = Math.max(0, Math.round(months));
+        const yrs = Math.floor(total / 12);
+        const mos = total % 12;
+        if (yrs === 0) return `${mos} Mo${mos === 1 ? '' : 's'}`;
+        if (mos === 0) return `${yrs} Yr${yrs === 1 ? '' : 's'}`;
+        return `${yrs} Yr${yrs === 1 ? '' : 's'} ${mos} Mo${mos === 1 ? '' : 's'}`;
+      }
+
+      function notify(msg) {
+        const box = document.getElementById('toastBox');
+        const txt = document.getElementById('toastText');
+        txt.textContent = msg;
+        box.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => box.classList.add('translate-y-20', 'opacity-0'), 2600);
+      }
+
+      // --- Core Calculation Engine ---
+      function runSimulation() {
+        const principal = Math.max(10000, parseFloat(el.loanAmountInput.value) || 5000000);
+        const annualRate = Math.max(0, parseFloat(el.interestRateInput.value) || 0);
+        const tenureYears = Math.max(1, Math.min(40, parseInt(el.tenureInput.value, 10) || 20));
+
+        const extraEmiCount = parseInt(el.extraEmiCountSlider.value, 10) || 0;
+        const extraStartYr = Math.max(1, parseInt(el.extraEmiStartYear.value, 10) || 1);
+        const extraUntilPayoff = el.extraEmiUntilPayoff.checked;
+        const extraDurYrs = Math.max(1, parseInt(el.extraEmiDuration.value, 10) || 1);
+        const extraEndYr = extraUntilPayoff ? 999 : (extraStartYr + extraDurYrs - 1);
+
+        const stepUpPct = (parseFloat(el.stepUpSlider.value) || 0) / 100;
+        const stepStartYr = Math.max(1, parseInt(el.stepUpStartYear.value, 10) || 1);
+        const stepDurYrs = Math.max(1, parseInt(el.stepUpDuration.value, 10) || 1);
+        const stepEndYr = stepStartYr + stepDurYrs - 1;
+
+        const sipEnabled = el.sipEnabledCheckbox.checked;
+        const sipPct = (parseFloat(el.sipPctSlider.value) || 0) / 100;
+        const sipStartYr = Math.max(1, parseInt(el.sipStartYear.value, 10) || 1);
+        const sipDurYrs = Math.max(1, parseInt(el.sipDurationYears.value, 10) || 1);
+        const sipReturnAnnual = (parseFloat(el.sipReturnRate.value) || 0) / 100;
+        const sipStepAnnual = (parseFloat(el.sipStepUpRate.value) || 0) / 100;
+
+        const monthlyRate = (annualRate / 12) / 100;
+        const totalMonthsOriginal = tenureYears * 12;
+
+        // Base EMI formula
+        let baseEmi = 0;
+        if (monthlyRate > 0) {
+          const pow = Math.pow(1 + monthlyRate, totalMonthsOriginal);
+          baseEmi = (principal * monthlyRate * pow) / (pow - 1);
+        } else {
+          baseEmi = principal / totalMonthsOriginal;
+        }
+
+        // 1. Baseline Amortization
+        let baseBal = principal;
+        let baseTotalInterest = 0;
+        const baselineSeries = [principal];
+
+        for (let m = 1; m <= totalMonthsOriginal; m++) {
+          const interest = baseBal * monthlyRate;
+          baseTotalInterest += interest;
+          const prinPaid = Math.min(baseBal, baseEmi - interest);
+          baseBal = Math.max(0, baseBal - prinPaid);
+          if (m % 12 === 0) baselineSeries.push(Math.round(baseBal));
+        }
+
+        // 2. Accelerated Amortization + Parallel SIP
+        const sipEndYr = sipStartYr + sipDurYrs - 1;
+        const totalHorizonYears = Math.max(tenureYears, sipEnabled ? sipEndYr : tenureYears);
+        const monthlySipRate = Math.pow(1 + sipReturnAnnual, 1 / 12) - 1;
+
+        let balance = principal;
+        let currentEmi = baseEmi;
+        let peakEmi = baseEmi;
+        let actualTotalInterest = 0;
+        let monthsElapsed = 0;
+        let payoffMonths = 0;
+
+        const initialMonthlySip = baseEmi * sipPct;
+        let currentMonthlySip = initialMonthlySip;
+        let totalSipInvested = 0;
+        let sipCorpus = 0;
+
+        const acceleratedSeries = [principal];
+        const sipSeries = [0];
+        const schedule = [];
+
+        for (let yr = 1; yr <= totalHorizonYears; yr++) {
+          // Step-up EMI check at beginning of each year
+          if (stepUpPct > 0 && balance > 0.01) {
+            if (yr >= stepStartYr && yr <= stepEndYr && yr > 1) {
+              currentEmi = currentEmi * (1 + stepUpPct);
+            }
+            if (currentEmi > peakEmi) peakEmi = currentEmi;
+          }
+
+          const openingBalance = balance;
+          const yearMonthlyEmi = balance > 0.01 ? currentEmi : 0;
+          const yearMonthlySip = (sipEnabled && yr >= sipStartYr && yr <= sipEndYr) ? currentMonthlySip : 0;
+
+          let yearRegularEmiPaid = 0;
+          let yearExtraPaid = 0;
+          let yearPrincipalPaid = 0;
+          let yearInterestPaid = 0;
+
+          const extraActive = extraEmiCount > 0 && yr >= extraStartYr && yr <= extraEndYr;
+
+          for (let m = 1; m <= 12; m++) {
+            monthsElapsed++;
+
+            if (balance > 0.01) {
+              const interest = balance * monthlyRate;
+              yearInterestPaid += interest;
+              actualTotalInterest += interest;
+
+              let prin = currentEmi - interest;
+              if (prin > balance) prin = balance;
+              balance -= prin;
+              yearPrincipalPaid += prin;
+              yearRegularEmiPaid += (prin + interest);
+
+              // Extra EMI lump-sum in 12th month of active year
+              if (extraActive && m === 12 && balance > 0.01) {
+                const extraLump = Math.min(balance, currentEmi * extraEmiCount);
+                balance -= extraLump;
+                yearPrincipalPaid += extraLump;
+                yearExtraPaid += extraLump;
+              }
+
+              if (balance <= 0.01 && payoffMonths === 0) {
+                payoffMonths = monthsElapsed;
+              }
+            }
+
+            // SIP compounding
+            if (sipEnabled) {
+              if (yr >= sipStartYr && yr <= sipEndYr) {
+                sipCorpus = (sipCorpus + currentMonthlySip) * (1 + monthlySipRate);
+                totalSipInvested += currentMonthlySip;
+              } else if (yr > sipEndYr) {
+                sipCorpus = sipCorpus * (1 + monthlySipRate);
+              }
+            }
+          }
+
+          schedule.push({
+            year: yr,
+            openingBalance,
+            monthlyEmi: yearMonthlyEmi,
+            regularEmiPaid: yearRegularEmiPaid,
+            extraPrepayment: yearExtraPaid,
+            principalPaid: yearPrincipalPaid,
+            interestPaid: yearInterestPaid,
+            cumulativeInterest: actualTotalInterest,
+            closingBalance: Math.max(0, balance),
+            monthlySip: yearMonthlySip,
+            cumulativeSipInvested: totalSipInvested,
+            sipCorpusValue: Math.round(sipCorpus)
+          });
+
+          acceleratedSeries.push(Math.round(Math.max(0, balance)));
+          sipSeries.push(Math.round(sipCorpus));
+
+          if (sipStepAnnual > 0 && yr >= sipStartYr && yr < sipEndYr) {
+            currentMonthlySip = currentMonthlySip * (1 + sipStepAnnual);
+          }
+        }
+
+        if (payoffMonths === 0) payoffMonths = totalMonthsOriginal;
+
+        // Align series lengths for chart
+        const maxLen = Math.max(baselineSeries.length, acceleratedSeries.length, sipSeries.length);
+        while (baselineSeries.length < maxLen) baselineSeries.push(0);
+        while (acceleratedSeries.length < maxLen) acceleratedSeries.push(0);
+        while (sipSeries.length < maxLen) sipSeries.push(sipSeries[sipSeries.length - 1] || 0);
+
+        return {
+          principal,
+          annualRate,
+          tenureYears,
+          totalMonthsOriginal,
+          baseEmi,
+          peakEmi,
+          baseTotalInterest,
+          baseTotalOutflow: principal + baseTotalInterest,
+          actualTotalInterest,
+          actualTotalOutflow: principal + actualTotalInterest,
+          interestSaved: Math.max(0, baseTotalInterest - actualTotalInterest),
+          payoffMonths,
+          monthsSaved: Math.max(0, totalMonthsOriginal - payoffMonths),
+          extraEmiCount,
+          extraStartYr,
+          extraUntilPayoff,
+          extraDurYrs,
+          stepUpPct,
+          stepStartYr,
+          stepDurYrs,
+          sipEnabled,
+          initialMonthlySip,
+          totalSipInvested,
+          sipCorpus: Math.round(sipCorpus),
+          schedule,
+          baselineSeries,
+          acceleratedSeries,
+          sipSeries
+        };
+      }
+
+      // --- Render UI ---
+      function renderAll() {
+        // Control toggle states
+        const extraCount = parseInt(el.extraEmiCountSlider.value, 10) || 0;
+        el.extraEmiWindowBox.classList.toggle('opacity-40', extraCount === 0);
+        el.extraEmiWindowBox.classList.toggle('pointer-events-none', extraCount === 0);
+        el.extraEmiDuration.disabled = el.extraEmiUntilPayoff.checked;
+
+        const stepVal = parseFloat(el.stepUpSlider.value) || 0;
+        el.stepUpWindowBox.classList.toggle('opacity-40', stepVal === 0);
+        el.stepUpWindowBox.classList.toggle('pointer-events-none', stepVal === 0);
+
+        const sipChecked = el.sipEnabledCheckbox.checked;
+        el.sipControlsBox.classList.toggle('opacity-40', !sipChecked);
+        el.sipControlsBox.classList.toggle('pointer-events-none', !sipChecked);
+
+        const res = runSimulation();
+        latestResults = res;
+
+        // Badges & helper labels
+        el.loanAmountWords.textContent = formatWordsINR(res.principal);
+        el.tenureMonthsLabel.textContent = `${res.totalMonthsOriginal} Months`;
+        el.extraEmiCountBadge.textContent = extraCount === 0 ? 'None' : `${extraCount} Extra / yr`;
+        el.extraEmiAmtBadge.textContent = extraCount > 0 ? `${formatINR(res.baseEmi * extraCount)}/yr` : 'Inactive';
+        el.stepUpRateBadge.textContent = `${el.stepUpSlider.value}% / Year`;
+        el.sipPctBadge.textContent = `${el.sipPctSlider.value}% of EMI`;
+        el.sipMonthlyPreview.textContent = sipChecked ? `${formatINR(res.initialMonthlySip)}/mo` : 'Disabled';
+
+        // Hero Section
+        el.heroInterestSaved.textContent = formatINR(res.interestSaved);
+        el.heroRevisedTenure.textContent = formatMonths(res.payoffMonths);
+        el.heroOriginalTenure.textContent = `${res.tenureYears} Yrs`;
+        el.heroTimeSaved.textContent = formatMonths(res.monthsSaved);
+        const pctFaster = res.totalMonthsOriginal > 0 ? Math.round((res.monthsSaved / res.totalMonthsOriginal) * 100) : 0;
+        el.heroPctFaster.textContent = `${pctFaster}% faster payoff`;
+
+        el.heroExtraSummary.textContent = extraCount > 0
+          ? `${extraCount} extra EMI/yr (from Yr ${res.extraStartYr})`
+          : '0 extra EMIs';
+        el.heroStepSummary.textContent = stepVal > 0
+          ? `${el.stepUpSlider.value}% annual step-up (Yr ${res.stepStartYr}–${res.stepStartYr + res.stepDurYrs - 1})`
+          : '0% step-up';
+
+        // KPIs
+        el.kpiBaseEmi.textContent = formatINR(res.baseEmi);
+        el.kpiPeakEmi.textContent = `Peak EMI: ${formatINR(res.peakEmi)}/mo`;
+
+        el.kpiRevisedTenure.textContent = formatMonths(res.payoffMonths);
+        el.kpiTenureSaved.textContent = `${formatMonths(res.monthsSaved)} saved`;
+
+        el.kpiInterestSaved.textContent = formatINR(res.interestSaved);
+        const savedPct = res.baseTotalInterest > 0 ? ((res.interestSaved / res.baseTotalInterest) * 100).toFixed(1) : '0.0';
+        el.kpiInterestSavedPct.textContent = `${savedPct}% interest eliminated`;
+
+        el.kpiActualInterest.textContent = formatINR(res.actualTotalInterest);
+        el.kpiBaselineInterest.textContent = `Baseline: ${formatINR(res.baseTotalInterest)}`;
+
+        el.kpiTotalOutflow.textContent = formatINR(res.actualTotalOutflow);
+        el.kpiBaselineOutflow.textContent = `Baseline: ${formatINR(res.baseTotalOutflow)}`;
+
+        el.kpiSipCorpus.textContent = formatINR(res.sipCorpus);
+        el.kpiSipInvested.textContent = `Invested: ${formatINR(res.totalSipInvested)}`;
+        const sipGain = res.totalSipInvested > 0
+          ? Math.round(((res.sipCorpus - res.totalSipInvested) / res.totalSipInvested) * 100)
+          : 0;
+        el.kpiSipGainBadge.textContent = `+${sipGain}%`;
+
+        // Donut legend numbers
+        el.donutPrincipalText.textContent = formatINR(res.principal);
+        el.donutInterestText.textContent = formatINR(res.actualTotalInterest);
+        el.donutSavedText.textContent = formatINR(res.interestSaved);
+
+        renderTable(res.schedule);
+        renderCharts(res);
+      }
+
+      function renderTable(schedule) {
+        el.scheduleTableBody.innerHTML = '';
+        schedule.forEach(row => {
+          const isLoanFree = row.openingBalance <= 0 && row.closingBalance <= 0;
+          const tr = document.createElement('tr');
+          tr.className = isLoanFree
+            ? 'bg-emerald-50/40 dark:bg-emerald-950/20 hover:bg-emerald-50/70 transition-colors'
+            : 'hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors';
+
+          tr.innerHTML = `
+            <td class="py-2.5 px-3 font-bold text-slate-900 dark:text-white">
+              Yr ${row.year}
+              ${isLoanFree ? '<span class="ml-1 text-[9px] bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300 px-1.5 py-0.5 rounded-full">Loan Free</span>' : ''}
+            </td>
+            <td class="py-2.5 px-3">${formatINR(row.openingBalance)}</td>
+            <td class="py-2.5 px-3 font-mono">${row.monthlyEmi > 0 ? formatINR(row.monthlyEmi) : '₹0'}</td>
+            <td class="py-2.5 px-3">${formatINR(row.regularEmiPaid)}</td>
+            <td class="py-2.5 px-3 font-semibold ${row.extraPrepayment > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}">
+              ${row.extraPrepayment > 0 ? '+' + formatINR(row.extraPrepayment) : '-'}
+            </td>
+            <td class="py-2.5 px-3 text-brand-600 dark:text-brand-400 font-semibold">${formatINR(row.principalPaid)}</td>
+            <td class="py-2.5 px-3 text-amber-600 dark:text-amber-500 font-semibold">${formatINR(row.interestPaid)}</td>
+            <td class="py-2.5 px-3 text-amber-700 dark:text-amber-400 font-bold">${formatINR(row.cumulativeInterest)}</td>
+            <td class="py-2.5 px-3 font-bold ${row.closingBalance === 0 ? 'text-emerald-600 dark:text-emerald-400' : ''}">
+              ${row.closingBalance === 0 ? '₹0 (Paid Off)' : formatINR(row.closingBalance)}
+            </td>
+            <td class="py-2.5 px-3 text-indigo-600 dark:text-indigo-400 font-semibold">${row.monthlySip > 0 ? formatINR(row.monthlySip) : '-'}</td>
+            <td class="py-2.5 px-3 text-slate-500">${row.cumulativeSipInvested > 0 ? formatINR(row.cumulativeSipInvested) : '-'}</td>
+            <td class="py-2.5 px-3 text-right font-extrabold text-emerald-600 dark:text-emerald-400">${formatINR(row.sipCorpusValue)}</td>
+          `;
+          el.scheduleTableBody.appendChild(tr);
+        });
+      }
+
+      function renderCharts(res) {
+        if (typeof Chart === 'undefined') return;
+        const isDark = document.documentElement.classList.contains('dark');
+        const tickColor = isDark ? '#94a3b8' : '#64748b';
+        const gridColor = isDark ? 'rgba(51,65,85,0.4)' : 'rgba(226,232,240,0.8)';
+
+        const labels = Array.from({ length: res.baselineSeries.length }, (_, i) => `Yr ${i}`);
+
+        const lineCtx = document.getElementById('trajectoryChart').getContext('2d');
+        if (trajectoryChart) trajectoryChart.destroy();
+
+        const datasets = [
+          {
+            label: 'Standard Balance',
+            data: res.baselineSeries,
+            borderColor: '#94a3b8',
+            borderDash: [5, 5],
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.2
+          },
+          {
+            label: 'Prepay Loan Balance',
+            data: res.acceleratedSeries,
+            borderColor: '#4f46e5',
+            backgroundColor: 'rgba(79,70,229,0.08)',
+            borderWidth: 2.5,
+            pointRadius: 2,
+            fill: true,
+            tension: 0.25
+          }
+        ];
+
+        if (res.sipEnabled) {
+          datasets.push({
+            label: 'SIP Corpus',
+            data: res.sipSeries,
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16,185,129,0.1)',
+            borderWidth: 2.5,
+            pointRadius: 2,
+            fill: true,
+            tension: 0.25
+          });
+        }
+
+        trajectoryChart = new Chart(lineCtx, {
+          type: 'line',
+          data: { labels, datasets },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: ctx => ` ${ctx.dataset.label}: ${formatINR(ctx.raw)}`
+                }
+              }
+            },
+            scales: {
+              x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 10 } } },
+              y: {
+                grid: { color: gridColor },
+                ticks: {
+                  color: tickColor,
+                  font: { size: 10 },
+                  callback: v => v >= 10000000 ? '₹' + (v / 10000000).toFixed(1) + 'Cr' : v >= 100000 ? '₹' + (v / 100000).toFixed(0) + 'L' : '₹' + v
+                }
+              }
+            }
+          }
+        });
+
+        const donutCtx = document.getElementById('donutChart').getContext('2d');
+        if (donutChart) donutChart.destroy();
+
+        donutChart = new Chart(donutCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Principal', 'Actual Interest', 'Interest Saved'],
+            datasets: [{
+              data: [res.principal, Math.round(res.actualTotalInterest), Math.round(res.interestSaved)],
+              backgroundColor: ['#4f46e5', '#f59e0b', '#10b981'],
+              borderWidth: 2,
+              borderColor: isDark ? '#0f172a' : '#ffffff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '66%',
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: ctx => ` ${ctx.label}: ${formatINR(ctx.raw)}`
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // --- Bind All Input Events Cleanly ---
+      function bindSliderPair(inputEl, sliderEl, formatDecimals) {
+        sliderEl.addEventListener('input', () => {
+          inputEl.value = formatDecimals ? parseFloat(sliderEl.value).toFixed(formatDecimals) : sliderEl.value;
+          renderAll();
+        });
+        inputEl.addEventListener('input', () => {
+          const val = parseFloat(inputEl.value);
+          if (!Number.isNaN(val)) {
+            sliderEl.value = Math.min(Math.max(val, parseFloat(sliderEl.min)), parseFloat(sliderEl.max));
+          }
+          renderAll();
+        });
+      }
+
+      bindSliderPair(el.loanAmountInput, el.loanAmountSlider, 0);
+      bindSliderPair(el.interestRateInput, el.interestRateSlider, 2);
+      bindSliderPair(el.tenureInput, el.tenureSlider, 0);
+
+      [
+        el.extraEmiCountSlider,
+        el.extraEmiStartYear,
+        el.extraEmiDuration,
+        el.stepUpSlider,
+        el.stepUpStartYear,
+        el.stepUpDuration,
+        el.sipPctSlider,
+        el.sipStartYear,
+        el.sipDurationYears,
+        el.sipReturnRate,
+        el.sipStepUpRate
+      ].forEach(node => node.addEventListener('input', renderAll));
+
+      el.extraEmiUntilPayoff.addEventListener('change', renderAll);
+      el.sipEnabledCheckbox.addEventListener('change', renderAll);
+
+      // Quick Preset
+      document.getElementById('presetAggressiveBtn').addEventListener('click', () => {
+        el.extraEmiCountSlider.value = 1;
+        el.extraEmiStartYear.value = 1;
+        el.extraEmiUntilPayoff.checked = true;
+        el.stepUpSlider.value = 10;
+        el.stepUpStartYear.value = 2;
+        el.stepUpDuration.value = 10;
+        el.sipEnabledCheckbox.checked = true;
+        el.sipPctSlider.value = 15;
+        renderAll();
+        notify('Applied 10% Annual Step-Up + 1 Extra EMI Preset');
+      });
+
+      // Reset Defaults
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        el.loanAmountInput.value = 5000000;
+        el.loanAmountSlider.value = 5000000;
+        el.interestRateInput.value = '8.50';
+        el.interestRateSlider.value = 8.5;
+        el.tenureInput.value = 20;
+        el.tenureSlider.value = 20;
+
+        el.extraEmiCountSlider.value = 1;
+        el.extraEmiStartYear.value = 1;
+        el.extraEmiUntilPayoff.checked = true;
+        el.extraEmiDuration.value = 15;
+
+        el.stepUpSlider.value = 5;
+        el.stepUpStartYear.value = 2;
+        el.stepUpDuration.value = 10;
+
+        el.sipEnabledCheckbox.checked = true;
+        el.sipPctSlider.value = 10;
+        el.sipStartYear.value = 1;
+        el.sipDurationYears.value = 15;
+        el.sipReturnRate.value = 12;
+        el.sipStepUpRate.value = 5;
+
+        renderAll();
+        notify('Reset all values to default');
+      });
+
+      // Export CSV
+      document.getElementById('exportCsvBtn').addEventListener('click', () => {
+        if (!latestResults) return;
+        const headers = 'Year,Opening Balance,Monthly EMI,Regular EMI Paid,Extra Prepayment,Principal Paid,Interest Paid,Cumulative Interest,Closing Balance,Monthly SIP,Cumulative SIP Invested,Year-End SIP Corpus\n';
+        const rows = latestResults.schedule.map(r => [
+          r.year,
+          Math.round(r.openingBalance),
+          Math.round(r.monthlyEmi),
+          Math.round(r.regularEmiPaid),
+          Math.round(r.extraPrepayment),
+          Math.round(r.principalPaid),
+          Math.round(r.interestPaid),
+          Math.round(r.cumulativeInterest),
+          Math.round(r.closingBalance),
+          Math.round(r.monthlySip),
+          Math.round(r.cumulativeSipInvested),
+          Math.round(r.sipCorpusValue)
+        ].join(',')).join('\n');
+
+        const blob = new Blob([headers + rows], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Home_Loan_Prepay_SIP_${Date.now()}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        notify('Exported Amortization & SIP Schedule to CSV');
+      });
+
+      // Copy Summary
+      document.getElementById('copySummaryBtn').addEventListener('click', () => {
+        if (!latestResults) return;
+        const r = latestResults;
+        const text = `Home Loan Prepayment & SIP Summary
+Loan Amount: ${formatINR(r.principal)} (${formatWordsINR(r.principal)})
+Interest Rate: ${r.annualRate}% p.a. | Tenure: ${r.tenureYears} Yrs
+Initial EMI: ${formatINR(r.baseEmi)}/mo | Peak EMI: ${formatINR(r.peakEmi)}/mo
+Revised Payoff: ${formatMonths(r.payoffMonths)} (Saved ${formatMonths(r.monthsSaved)})
+Actual Interest Paid: ${formatINR(r.actualTotalInterest)} (Saved ${formatINR(r.interestSaved)})
+SIP Corpus Built: ${formatINR(r.sipCorpus)} (Invested ${formatINR(r.totalSipInvested)})`;
+
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        notify('Copied financial summary to clipboard');
+      });
+
+      // Theme Toggle
+      const sunIcon = document.getElementById('sunIcon');
+      const moonIcon = document.getElementById('moonIcon');
+      function setTheme(dark) {
+        document.documentElement.classList.toggle('dark', dark);
+        sunIcon.classList.toggle('hidden', !dark);
+        moonIcon.classList.toggle('hidden', dark);
+        if (latestResults) renderCharts(latestResults);
+      }
+      setTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+      document.getElementById('themeToggleBtn').addEventListener('click', () => {
+        setTheme(!document.documentElement.classList.contains('dark'));
+      });
+
+      // Run immediately on script parse
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
